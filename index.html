@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Interactive Gallery</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        *{
+          margin:0;
+          padding:0;
+          box-sizing:border-box;
+          font-family:'Poppins',sans-serif;
+        }
+
+        body{
+          background:#0f0f0f;
+          overflow-x:hidden;
+          color:white;
+        }
+
+        /* ---------------- LEFT NAV ---------------- */
+
+        /* ---------------- PREMIUM LEFT NAV ---------------- */
+
+.side-nav{
+    position:fixed;
+    left:30px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:3000;
+}
+
+.side-nav ul{
+    list-style:none;
+    padding:20px 15px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(15px);
+    border:1px solid rgba(255,255,255,0.1);
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+
+.side-nav li{
+    position:relative;
+    color:white;
+    font-weight:500;
+    font-size:15px;
+    cursor:pointer;
+    transition:.4s ease;
+    letter-spacing:1px;
+}
+
+/* Animated underline */
+.side-nav li::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-6px;
+    width:0%;
+    height:2px;
+    background:white;
+    transition:.4s ease;
+}
+
+/* Hover Effects */
+.side-nav li:hover{
+    transform:translateX(8px);
+    text-shadow:0 0 15px rgba(255,255,255,0.6);
+}
+
+.side-nav li:hover::after{
+    width:100%;
+}
+
+/* Glow Active Effect */
+.side-nav li:active{
+    transform:scale(.95);
+}
+
+        .side-nav button{
+          width:12px;
+          height:12px;
+          border-radius:50%;
+          border:none;
+          background:white;
+          opacity:.4;
+          cursor:pointer;
+          transition:.3s;
+        }
+
+        .side-nav button:hover{
+          opacity:1;
+          transform:scale(1.4);
+        }
+
+        /* ---------------- IMAGE STRIPS ---------------- */
+
+        .gallery{
+          height:100vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:10px;
+          perspective:1200px;
+        }
+
+        .image-strip{
+          width:140px;
+          height:500px;
+          overflow:hidden;
+          border-radius:10px;
+          position:relative;
+          cursor:pointer;
+          transition:.6s ease;
+          transform-style:preserve-3d;
+        }
+
+        .image-strip img{
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          transform:scale(1.2);
+          transition:1s ease;
+        }
+
+        /* opposite floating */
+        .image-strip:nth-child(odd){
+          animation:floatUp 6s ease-in-out infinite;
+        }
+        .image-strip:nth-child(even){
+          animation:floatDown 6s ease-in-out infinite;
+        }
+
+        @keyframes floatUp{
+          0%,100%{transform:translateY(-10px);}
+          50%{transform:translateY(20px);}
+        }
+
+        @keyframes floatDown{
+          0%,100%{transform:translateY(20px);}
+          50%{transform:translateY(-10px);}
+        }
+
+        /* hover zoom */
+        .image-strip:hover img{
+          transform:scale(1);
+        }
+
+        .image-strip:hover{
+          width:250px;
+        }
+
+        /* ---------------- FULLSCREEN MODAL ---------------- */
+
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.8);
+          backdrop-filter:blur(20px);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          opacity:0;
+          pointer-events:none;
+          transition:.5s;
+          z-index:2000;
+        }
+
+        .modal.active{
+          opacity:1;
+          pointer-events:all;
+        }
+
+        .modal img{
+          width:70%;
+          max-height:80vh;
+          object-fit:cover;
+          border-radius:20px;
+        }
+
+        .explore-btn{
+          position:absolute;
+          bottom:50px;
+          padding:15px 40px;
+          border-radius:50px;
+          border:1px solid rgba(255,255,255,.4);
+          background:rgba(255,255,255,.1);
+          backdrop-filter:blur(10px);
+          color:white;
+          cursor:pointer;
+          font-size:18px;
+          transition:.3s;
+        }
+
+        .explore-btn:hover{
+          background:white;
+          color:black;
+        }
+
+        /* ---------------- RANDOM 3D SECTION ---------------- */
+
+        .random-section{
+          height:120vh;
+          position:relative;
+          perspective:1500px;
+          overflow:hidden;
+        }
+
+        .random-img{
+          position:absolute;
+          width:250px;
+          border-radius:20px;
+          transition:transform .1s linear;
+          will-change:transform;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- LEFT NAV -->
+<!-- PREMIUM LEFT NAV -->
+<nav class="side-nav">
+    <ul>
+        <li onclick="scrollTop()">
+            <span>Home</span>
+        </li>
+        <li onclick="scrollToRandom()">
+            <span>About</span>
+        </li>
+        <li>
+            <span>Contacts</span>
+        </li>
+        <li>
+            <span>Share</span>
+        </li>
+    </ul>
+</nav>
+
+<!-- TOP GALLERY -->
+<section class="gallery">
+
+    <div class="image-strip">
+        <img src="https://images.unsplash.com/photo-1576232823021-f3770a34df63?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    </div>
+
+    <div class="image-strip">
+        <img src="https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=715&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    </div>
+
+    <div class="image-strip">
+        <img src="https://images.unsplash.com/photo-1673229745018-144e48abad35?q=80&w=707&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    </div>
+
+    <div class="image-strip">
+        <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d">
+    </div>
+
+    <div class="image-strip">
+        <img src="https://images.unsplash.com/photo-1600901171436-154bd145b03b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    </div>
+
+    <div class="image-strip">
+        <img src="https://images.unsplash.com/photo-1745578865096-0f51e5ac3213?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    </div>
+
+</section>
+
+<!-- FULLSCREEN MODAL -->
+<div class="modal" id="modal">
+    <img id="modalImg">
+    <button class="explore-btn" onclick="scrollToRandom()">Explore</button>
+</div>
+
+<!-- RANDOM 3D SECTION -->
+<section class="random-section" id="randomSection"></section>
+
+<script>
+
+    /* ----------- OPEN MODAL ----------- */
+    const strips = document.querySelectorAll('.image-strip');
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modalImg');
+
+    strips.forEach(strip=>{
+      strip.addEventListener('click', ()=>{
+        modal.classList.add('active');
+        modalImg.src = strip.querySelector('img').src;
+      });
+    });
+
+    modal.addEventListener('click', e=>{
+      if(e.target === modal){
+        modal.classList.remove('active');
+      }
+    });
+
+    /* ----------- SCROLL FUNCTIONS ----------- */
+    function scrollToRandom(){
+      document.getElementById('randomSection')
+      .scrollIntoView({behavior:'smooth'});
+      modal.classList.remove('active');
+    }
+
+    function scrollTop(){
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function openRandom(){
+      scrollToRandom();
+    }
+
+    /* ----------- RANDOM IMAGE PLACEMENT ----------- */
+
+    const randomSection = document.getElementById('randomSection');
+
+    const images = [
+    "https://images.unsplash.com/photo-1581017316696-709bf1da2ed5?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1576232823021-f3770a34df63?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1663856548834-3b5814f6dc11?q=80&w=732&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1491553895911-0055eca6402d",
+    "https://images.unsplash.com/photo-1663856703846-c1f1d4980889?q=80&w=722&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1673231550539-7d71c794e66c?q=80&w=1088&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    ];
+
+    const positions = [
+  { top: "20%", left: "10%" },
+  { top: "20%", left: "60%" },
+  { top: "50%", left: "20%" },
+  { top: "70%", left: "70%" },
+  { top: "40%", left: "45%" },
+  { top: "80%", left: "30%" }
+];
+
+images.forEach((src, index) => {
+  const img = document.createElement('img');
+  img.src = src;
+  img.classList.add('random-img');
+
+  img.style.top = positions[index].top;
+  img.style.left = positions[index].left;
+
+  randomSection.appendChild(img);
+});
+    /* ----------- 3D MOUSE EFFECT ----------- */
+
+    randomSection.addEventListener('mousemove', e=>{
+      const imgs = document.querySelectorAll('.random-img');
+      const x = e.clientX / window.innerWidth - .5;
+      const y = e.clientY / window.innerHeight - .5;
+
+      imgs.forEach((img,i)=>{
+        const depth = (i+1)*30;
+        img.style.transform =
+          `translateX(${x*depth}px)
+           translateY(${y*depth}px)
+           rotateY(${x*20}deg)
+           rotateX(${-y*20}deg)`;
+      });
+    });
+
+</script>
+
+</body>
+</html>
